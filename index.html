@@ -546,10 +546,111 @@
      with misaligned tiles. Scope Leaflet's own elements back to their expected box model. */
   .leaflet-container, .leaflet-container *{ box-sizing:content-box; }
   .leaflet-container{ background:#ddd; }
+
+  /* ---- Lead capture gate ---- */
+  .lead-gate-overlay{
+    position:fixed; inset:0; z-index:1000; background:rgba(21,34,25,0.55);
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    backdrop-filter:blur(2px);
+  }
+  .lead-gate-card{
+    background:#FFFFFF; border-radius:16px; padding:32px 28px; max-width:420px; width:100%;
+    box-shadow:0 20px 60px rgba(21,34,25,0.25);
+  }
+  .lead-gate-title{
+    font-family:'Poppins',sans-serif; font-weight:700; font-size:22px; color:var(--text);
+    margin-top:8px;
+  }
+  .lead-gate-sub{ font-size:13.5px; color:var(--text-muted); margin-top:6px; margin-bottom:20px; line-height:1.5; }
+  .lead-gate-field{ margin-bottom:14px; }
+  .lead-gate-field label{ display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:5px; }
+  .lead-gate-field input, .lead-gate-field select{
+    width:100%; padding:11px 12px; border:1px solid var(--border); border-radius:9px;
+    font-family:'Inter',sans-serif; font-size:14px; color:var(--text); background:var(--panel-alt);
+  }
+  .lead-gate-field input:focus, .lead-gate-field select:focus{ outline:2px solid var(--brand); outline-offset:1px; }
+  .lead-gate-btn{
+    width:100%; margin-top:6px; padding:13px; border:none; border-radius:9px;
+    background:var(--brand-dark); color:#FFFFFF; font-family:'Poppins',sans-serif;
+    font-weight:600; font-size:14.5px; cursor:pointer; transition:background .15s ease;
+  }
+  .lead-gate-btn:hover{ background:var(--brand); }
+  .lead-gate-btn:disabled{ opacity:0.6; cursor:default; }
+  .lead-gate-status{ margin-top:10px; font-size:12px; text-align:center; color:var(--text-dim); min-height:16px; }
+  .lead-gate-status.error{ color:#B5460A; }
+
+  /* ---- Advanced Access PIN gate ---- */
+  .pin-gate-overlay{
+    position:fixed; inset:0; z-index:1000; background:rgba(21,34,25,0.55);
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .pin-gate-card{
+    background:#FFFFFF; border-radius:16px; padding:28px; max-width:320px; width:100%;
+    box-shadow:0 20px 60px rgba(21,34,25,0.25); text-align:center;
+  }
+  .pin-gate-title{ font-family:'Poppins',sans-serif; font-weight:700; font-size:17px; color:var(--text); }
+  .pin-gate-sub{ font-size:12.5px; color:var(--text-muted); margin-top:6px; margin-bottom:16px; }
+  .pin-gate-input{
+    width:100%; padding:12px; border:1px solid var(--border); border-radius:9px;
+    font-family:'Poppins',sans-serif; font-size:22px; letter-spacing:8px; text-align:center;
+    background:var(--panel-alt); color:var(--text);
+  }
+  .pin-gate-actions{ display:flex; gap:8px; margin-top:14px; }
+  .pin-gate-btn{
+    flex:1; padding:10px; border:none; border-radius:9px; font-family:'Poppins',sans-serif;
+    font-weight:600; font-size:13px; cursor:pointer;
+  }
+  .pin-gate-btn.primary{ background:var(--brand-dark); color:#FFFFFF; }
+  .pin-gate-btn.secondary{ background:var(--panel-alt); color:var(--text-muted); }
+  .pin-gate-error{ margin-top:10px; font-size:12px; color:#B5460A; min-height:14px; }
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<div id="leadGateOverlay" class="lead-gate-overlay">
+  <div class="lead-gate-card">
+    <div class="brand-eyebrow">Renewable Energy Solutions</div>
+    <h2 class="lead-gate-title">Before you begin</h2>
+    <p class="lead-gate-sub">Quick intro so we know who we're talking to &mdash; this only shows once.</p>
+    <form id="leadGateForm" novalidate>
+      <div class="lead-gate-field">
+        <label for="leadName">Name</label>
+        <input type="text" id="leadName" placeholder="Your name">
+      </div>
+      <div class="lead-gate-field">
+        <label for="leadEmail">Email address</label>
+        <input type="email" id="leadEmail" placeholder="you@company.com">
+      </div>
+      <div class="lead-gate-field">
+        <label for="leadRole">You are</label>
+        <select id="leadRole">
+          <option value="" disabled selected>Select one&hellip;</option>
+          <option value="Business Owner">Business Owner</option>
+          <option value="Designer">Designer</option>
+          <option value="Site Owner">Site Owner</option>
+          <option value="Others">Others</option>
+        </select>
+      </div>
+      <button type="submit" class="lead-gate-btn" id="leadGateSubmitBtn">Continue to Calculator</button>
+      <div id="leadGateStatus" class="lead-gate-status"></div>
+    </form>
+  </div>
+</div>
+
+<div id="pinGateOverlay" class="pin-gate-overlay" style="display:none;">
+  <div class="pin-gate-card">
+    <div class="pin-gate-title">Advanced Access</div>
+    <div class="pin-gate-sub">Enter the PIN to continue.</div>
+    <input type="password" id="pinGateInput" class="pin-gate-input" inputmode="numeric" maxlength="4" placeholder="&bull;&bull;&bull;&bull;" autocomplete="off">
+    <div id="pinGateError" class="pin-gate-error"></div>
+    <div class="pin-gate-actions">
+      <button type="button" class="pin-gate-btn secondary" id="pinGateCancelBtn">Cancel</button>
+      <button type="button" class="pin-gate-btn primary" id="pinGateSubmitBtn">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="mainWrap" style="display:none;">
 
   <header>
     <div>
@@ -636,6 +737,7 @@
 
     <!-- OUTPUTS -->
     <div class="output-stack">
+
 
       <div class="hero-card">
         <div class="hero-label">Your Monthly Share to PSORE</div>
@@ -1358,6 +1460,113 @@
 </div>
 
 <script>
+// ==== GATES (lead capture + PIN) — deliberately placed first in this script, before any
+// calculator logic, so their setup can never be blocked by an error elsewhere in this file. ====
+// ---- Lead capture gate ----
+// Shown once per browser (tracked via localStorage) before the tool becomes usable. Submissions
+// are saved locally AND posted to a Formspree endpoint for delivery to isaqibadnan@gmail.com.
+// IMPORTANT: replace the placeholder below with your real Formspree form endpoint (sign up free
+// at https://formspree.io, create a form pointed at isaqibadnan@gmail.com, and paste its
+// endpoint URL here) — until then, submissions save locally but won't actually reach the inbox.
+const LEAD_GATE_FORMSPREE_ENDPOINT = 'https://formspree.io/f/xwleqajg';
+const LEAD_GATE_STORAGE_KEY = 'psore_lead_submitted_v1';
+const leadGateOverlay = document.getElementById('leadGateOverlay');
+const mainWrap = document.getElementById('mainWrap');
+
+// localStorage throws (not just returns null/fails silently) in sandboxed contexts without
+// same-origin access — e.g. a preview iframe, Safari private browsing, or a locked-down
+// enterprise browser. An unguarded call anywhere in this flow would halt the rest of the
+// function it's in, silently breaking the "Continue" button. Wrap every access.
+function safeGetStorage(key){
+  try { return localStorage.getItem(key); } catch(err){ return null; }
+}
+function safeSetStorage(key, value){
+  try { localStorage.setItem(key, value); return true; } catch(err){ return false; }
+}
+
+function unlockTool(){
+  leadGateOverlay.style.display = 'none';
+  mainWrap.style.display = 'block';
+  document.body.style.overflow = '';
+}
+
+if (safeGetStorage(LEAD_GATE_STORAGE_KEY)){
+  unlockTool();
+} else {
+  document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('leadGateForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  try {
+    const name = document.getElementById('leadName').value.trim();
+    const email = document.getElementById('leadEmail').value.trim();
+    const role = document.getElementById('leadRole').value;
+    const statusEl = document.getElementById('leadGateStatus');
+
+    if (!name || !email || !role){
+      statusEl.textContent = 'Please fill in all fields.';
+      statusEl.className = 'lead-gate-status error';
+      return;
+    }
+
+    // Unlock immediately — the visitor should never wait on a network call to get into the
+    // tool. The Formspree submission happens as a completely independent, fire-and-forget side
+    // effect afterward; its success or failure has no bearing on access.
+    unlockTool();
+
+    const payload = {name, email, role, submittedAt: new Date().toISOString()};
+    safeSetStorage(LEAD_GATE_STORAGE_KEY, JSON.stringify(payload));
+
+    fetch(LEAD_GATE_FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Accept':'application/json'},
+      body: JSON.stringify(payload)
+    }).catch(function(err){
+      console.warn('Lead submission network request failed (this has no effect on access):', err);
+    });
+  } catch(err){
+    // Anything unexpected here should never trap the visitor behind the gate.
+    console.error('Lead gate submit handler hit an unexpected error — unlocking anyway:', err);
+    unlockTool();
+  }
+});
+
+// ---- Advanced Access PIN gate ----
+// Soft gate only — this is client-side code, fully visible to anyone who reads the page source,
+// so it discourages casual wandering into the technical section but is not real access control.
+let ADVANCED_ACCESS_PIN = '0000'; // change this to update the PIN
+let advancedAccessUnlocked = false;
+let pendingAccessSwitch = false;
+const pinGateOverlay = document.getElementById('pinGateOverlay');
+const pinGateInput = document.getElementById('pinGateInput');
+const pinGateError = document.getElementById('pinGateError');
+
+function showPinGate(){
+  pinGateInput.value = '';
+  pinGateError.textContent = '';
+  pinGateOverlay.style.display = 'flex';
+  pinGateInput.focus();
+}
+function hidePinGate(){
+  pinGateOverlay.style.display = 'none';
+  pendingAccessSwitch = false;
+}
+function attemptPinUnlock(){
+  if (pinGateInput.value === ADVANCED_ACCESS_PIN){
+    advancedAccessUnlocked = true;
+    hidePinGate();
+    if (pendingAccessSwitch) switchAccessMode('advanced');
+  } else {
+    pinGateError.textContent = 'Incorrect PIN — try again.';
+    pinGateInput.value = '';
+    pinGateInput.focus();
+  }
+}
+document.getElementById('pinGateSubmitBtn').addEventListener('click', attemptPinUnlock);
+document.getElementById('pinGateCancelBtn').addEventListener('click', hidePinGate);
+pinGateInput.addEventListener('keydown', e=>{ if (e.key === 'Enter') attemptPinUnlock(); });
+
 // ---- Commercial assumptions (from Base_Model_MSA_updated_Downpayment_120826.xlsx: Menu/Inputs
 // sheets) — defaults match the Excel's stated values. All are editable via the Commercial
 // Assumptions panel in Advanced Access; this reader falls back to these defaults when a field
@@ -2903,6 +3112,17 @@ document.addEventListener('click', e=>{
 accessDropdownMenu.addEventListener('click', e=>{
   if (e.target.tagName !== 'BUTTON') return;
   const val = e.target.dataset.val;
+  accessDropdownMenu.style.display = 'none';
+  accessDropdown.classList.remove('open');
+  if (val === 'advanced' && !advancedAccessUnlocked){
+    pendingAccessSwitch = true;
+    showPinGate();
+    return;
+  }
+  switchAccessMode(val);
+});
+
+function switchAccessMode(val){
   [...accessDropdownMenu.children].forEach(btn=> btn.classList.toggle('active', btn.dataset.val===val));
   accessDropdownBtn.innerHTML = ACCESS_LABELS[val] + ' <span class="access-chevron">&#9662;</span>';
   // Advanced Access is additive — it shows everything Quick Access shows, plus the advanced
@@ -2917,11 +3137,9 @@ accessDropdownMenu.addEventListener('click', e=>{
   document.getElementById('rentalSplitTile').style.display = val==='advanced' ? 'none' : 'block';
   document.querySelector('.wrap').classList.toggle('advanced-mode', val==='advanced');
   movePersonalizeSection(val);
-  accessDropdownMenu.style.display = 'none';
-  accessDropdown.classList.remove('open');
   if (val === 'advanced') render(); // refresh advanced-only charts (they only compute when visible)
   window.scrollTo({top:0, behavior:'smooth'});
-});
+}
 
 solarSlider.addEventListener('input', render);
 batterySlider.addEventListener('input', render);
@@ -2957,7 +3175,15 @@ gstAdjustableGroup.addEventListener('click', e=>{
 document.getElementById('gstRateInput').addEventListener('input', render);
 updateGstUI();
 
-render();
+// Wrapped defensively: an error anywhere inside render() (e.g. from a newer feature) would
+// otherwise halt the rest of this script — including the lead-gate and PIN-gate wiring further
+// down, which is exactly what breaks the "Continue" button doing nothing after submission.
+try {
+  render();
+} catch(err){
+  console.error('Initial render() failed — calculator may show stale/placeholder values, but gates below will still work:', err);
+}
+
 </script>
 </body>
 </html>
